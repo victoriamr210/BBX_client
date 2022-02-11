@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import filterValues from './utils';
 import Select from 'react-select';
 import ItemService from './services/ItemService';
+import AuthenticationService from './AuthenticationService';
 
 class ItemList extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {items: [], isLoading: true, filterValue: 'NONE'};
+    this.state = {items: [], isLoading: true, filterValue: 'NONE', redirectLogin: false};
     this.remove = this.remove.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
   }
@@ -21,8 +22,13 @@ class ItemList extends Component {
     this.setState({isLoading: true});
 
     ItemService.listItems()
-      .then(response => this.setState({items: response.data, isLoading: false}));
-    console.log(this.state.items);
+      .then(response => {
+        this.setState({items: response.data, isLoading: false})})
+      .catch(error => {
+        console.log("error");
+        this.setState({redirectLogin: true});
+        return Promise.reject(error);
+      });
     // fetch('/api/item/list')
     //   .then(response => response.json())
     //   .then(data => this.setState({items: data, isLoading: false}));
@@ -34,21 +40,20 @@ class ItemList extends Component {
   }
 
   async remove(id) {
-    await fetch(`/api/item/delete/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }).then(() => {
-      let updatedItems = [...this.state.items].filter(i => i.idItem !== id);
-      this.setState({items: updatedItems});
-    });
+    (await ItemService.deleteItem(id)
+      .then( () => {
+        let updatedItems = [...this.state.items].filter(i => i.idItem !== id);
+       this.setState({items: updatedItems});
+      }));
   }
 
   render() {
-    const {isLoading, filterValue} = this.state;
+    const {isLoading, filterValue, redirectLogin} = this.state;
     let {items} = this.state;
+    console.log(filterValues);
+    if(redirectLogin){
+      return <Redirect to="/login" /> 
+    }
 
     if (isLoading) {
       return <p>Loading...</p>;

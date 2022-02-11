@@ -7,8 +7,8 @@ class ItemService {
     return axios.get(`${API_URL}/api/item/list`);
   }
 
-  newItem(){
-    return axios.post(`${API_URL}/api/item/new`);
+  newItem(item){
+    return axios.post(`${API_URL}/api/item/new`, JSON.stringify(item));
   }
 
   getItem(idItem){
@@ -16,7 +16,7 @@ class ItemService {
   }
 
   updateItem(item){
-    return axios.put(`${API_URL}/api/item/update`, item);
+    return axios.put(`${API_URL}/api/item/update/${item.idItem}`, JSON.stringify(item));
   }
 
   deleteItem(idItem){

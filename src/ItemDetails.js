@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { Container, Table, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import AppNavbar from './AppNavbar';
 import isItemValid from './utils';
+import ItemService from './services/ItemService';
 
 
 class ItemDetails extends Component{
     constructor(props){
         super(props);
         this.state = {
-            item: {}, isLoading: true
+            item: {}, isLoading: true, redirectLogin: false
         }
     }
 
@@ -17,7 +18,11 @@ class ItemDetails extends Component{
 
     componentDidMount() {
 
-
+      ItemService.getItem(this.props.match.params.id)
+      .then(response => this.setState({item: response.data, isLoading: false}))
+      .catch(error => {
+        this.setState({redirectLogin: true})
+      });
 
         fetch(`/api/item/get/${this.props.match.params.id}`)
             .then(response => response.json())
@@ -26,8 +31,13 @@ class ItemDetails extends Component{
 
 
     render(){
-        const {item, isLoading} = this.state;
+        const {item, isLoading, redirectLogin} = this.state;
         let falg = true;
+
+        if(redirectLogin){
+          return <Redirect to="/login" /> 
+        }
+
 
         if(isLoading){
             return <p>Loading...</p>;

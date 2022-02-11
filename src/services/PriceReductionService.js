@@ -3,9 +3,9 @@ const API_URL = 'http://localhost:8080';
 
 class PriceReductionService {
 
-  listSuppliers(){
+  listPrices(){
     return axios.get(`${API_URL}/api/priceReduction/list`);
   }
 }
 
-export default new SupplierService();
+export default new PriceReductionService();

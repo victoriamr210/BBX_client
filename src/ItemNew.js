@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Button, Container, Form, FormGroup, Input, Label, FormFeedback, Table   } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import Select from 'react-select';
 import { useRowSelect } from '@table-library/react-table-library/select';
+import SupplierService from './services/SupplierService';
+import ItemService from './services/ItemService';
+import PriceReductionService from './services/PriceReductionService'; 
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -16,7 +19,8 @@ class ItemNew extends Component {
         state: 'ACTIVE',
         creationDate: '',
         supplierDTOList: [],
-        priceReductionDTOS: []
+        priceReductionDTOS: [],
+        creator: ''
       };
 
 
@@ -31,6 +35,7 @@ class ItemNew extends Component {
               description: true
           },
           isLoading: true,
+          redirectLogin: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -42,13 +47,19 @@ class ItemNew extends Component {
       }
 
     componentDidMount() {
-      fetch('/api/supplier/list')
-        .then(response => response.json())
-        .then(data => this.setState({suppliers: data, isLoading: true}));
+      // fetch('/api/supplier/list')
+      //   .then(response => response.json())
+      //   .then(data => this.setState({suppliers: data, isLoading: true}));
       
-        fetch('/api/priceReduction/list')
-          .then(response => response.json())
-          .then(data =>  this.setState({priceReductions: data, isLoading: false}));
+      //   fetch('/api/priceReduction/list')
+      //     .then(response => response.json())
+      //     .then(data =>  this.setState({priceReductions: data, isLoading: false}));
+
+      SupplierService.listSuppliers()
+            .then(response => this.setState({suppliers: response.data}));
+        
+        PriceReductionService.listPrices()
+            .then(response => this.setState({priceReductions: response.data, isLoading: false}));
     }
 
       handleChange(event) {
@@ -112,22 +123,20 @@ class ItemNew extends Component {
       async handleSubmit(event) {
         event.preventDefault();
         const {item} = this.state;
-        console.log(item);
-            
-            await fetch('/api/item/new', {
-                method: 'POST' ,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(item),
-            });
-            this.props.history.push('/item');
 
+        ItemService.newItem(item)
+        .then(this.props.history.push('/item'))
+          .catch(error => {
+            this.setState({redirectLogin: true})
+          });
     }
         
       render() {
-        const {validate, suppliers, priceReductions, isLoading} = this.state;
+        const {validate, suppliers, priceReductions, isLoading, redirectLogin} = this.state;
+
+        if(redirectLogin){
+          return <Redirect to="/login" /> 
+        }
 
         if(isLoading){
           return <p>Loading...</p>;

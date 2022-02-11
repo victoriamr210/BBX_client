@@ -27,15 +27,6 @@ const filterValues = [
     }
 ];
 
-function authHeader() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.accessToken) {
-      return { Authorization: 'Bearer ' + user.accessToken };
-    } else {
-      return {};
-    }
-  }
 
 
-
-export default (isItemValid, filterValues, authHeader);
+export default (isItemValid, filterValues);

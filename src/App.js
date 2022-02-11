@@ -23,8 +23,8 @@ class App extends Component{
             <Route path='/login' exact={true} component={Home}/>
             {/* <AuthenticatedRoute path="/item" exact component={ItemList} /> */}
             <AuthenticatedRoute path="/logout" exact component={Home} />
-            <Route path='/item' exact={true} component={ItemList}/>
-            <Route path='/item/update/:id' exact={true} component={ItemUpdate}/>
+            <AuthenticatedRoute path='/item' exact={true} component={ItemList}/>
+            <AuthenticatedRoute path='/item/update/:id' exact={true} component={ItemUpdate}/>
             <Route path='/item/new/' exact={true} component={ItemNew}/>
             <Route path='/item/details/:id' exact={true} component={ItemDetails}/>
           </Switch>

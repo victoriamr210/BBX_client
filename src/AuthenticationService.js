@@ -67,6 +67,8 @@ class AuthenticationService {
             (config) => {
                 if (this.isUserLoggedIn()) {
                     config.headers.authorization = token
+                    config.headers['Content-Type'] = 'application/json';
+                    config.headers['Accept'] =  'application/json';
                 }
                 return config
             }
