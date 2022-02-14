@@ -20,7 +20,7 @@ class ItemNew extends Component {
         creationDate: '',
         supplierDTOList: [],
         priceReductionDTOS: [],
-        creator: ''
+        creator: {}
       };
 
 
@@ -31,11 +31,13 @@ class ItemNew extends Component {
           suppliers: [],
           priceReductions: [],
           validate : {
-              itemCode: true,
-              description: true
+              itemCode: false,
+              description: false
           },
           isLoading: true,
-          redirectLogin: false
+          redirectLogin: false,
+          errorItem: 'This field cannot be null',
+          errorDescription: 'This field cannot be null'
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -56,10 +58,16 @@ class ItemNew extends Component {
       //     .then(data =>  this.setState({priceReductions: data, isLoading: false}));
 
       SupplierService.listSuppliers()
-            .then(response => this.setState({suppliers: response.data}));
+            .then(response => this.setState({suppliers: response.data}))
+            .catch(error => {
+              this.setState({redirectLogin: true});
+            });
         
         PriceReductionService.listPrices()
-            .then(response => this.setState({priceReductions: response.data, isLoading: false}));
+            .then(response => this.setState({priceReductions: response.data, isLoading: false}))
+            .catch(error => {
+              this.setState({redirectLogin: true});
+            });
     }
 
       handleChange(event) {
@@ -105,19 +113,36 @@ class ItemNew extends Component {
       }
 
       handleValidation(event){
-          let item = this.state.item;
-          let formIsValid = true;
-          let {validate} = this.state;
-
-          if(!event.target.value){
-              formIsValid = false;
-              if(event.target.name === "itemCode")
-                validate.itemCode = false;
-              if(event.target.name === "description")  
-                validate.description = false;
+          let {validate, errorItem, errorDescription} = this.state;
+          
+          if(event.target.name === "itemCode"){
+            if(event.target.value){
+              validate.itemCode = true;
+              ItemService.checkItemCode(event.target.value)
+                .then(response => {
+                  if(response.data === false){
+                    validate.itemCode = false;
+                    errorItem = 'This code is already taken';
+                    this.setState({validate, errorItem});
+                  }
+                });
+            } else {
+              validate.itemCode = false;
+              errorItem = "This field cannot be null";
+              this.setState({validate, errorItem});
+            }
           }
 
-          this.setState({validate});
+          if(event.target.name === "description"){
+            if(event.target.value){
+              validate.description = true;
+              this.setState({validate, errorDescription});
+            } else {
+              validate.description = false;
+              errorDescription = "This field cannot be null";
+              this.setState({validate, errorDescription});
+            }
+          }  
       }
 
       async handleSubmit(event) {
@@ -132,7 +157,7 @@ class ItemNew extends Component {
     }
         
       render() {
-        const {validate, suppliers, priceReductions, isLoading, redirectLogin} = this.state;
+        const {validate, suppliers, priceReductions, isLoading, redirectLogin, errorDescription, errorItem} = this.state;
 
         if(redirectLogin){
           return <Redirect to="/login" /> 
@@ -167,30 +192,29 @@ class ItemNew extends Component {
                 <FormGroup>
                   <Label for="itemCode">Item Code</Label>
                   <Input type="text" name="itemCode" id="itemCode" 
-                    invalid={validate.itemCode}
-                    onChange={this.handleChange}/>
-                    <FormFeedback>This field cannot be null</FormFeedback>
+                    invalid={!validate.itemCode}
+                    valid={validate.itemCode} 
+                    onChange={(e) =>{
+                      this.handleValidation(e);
+                      this.handleChange(e);
+                    }}/>
+                    <FormFeedback>{errorItem}</FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Label for="description">Description</Label>
                   <Input type="text" name="description" id="description"  
-                  invalid={validate.itemCode} 
+                  invalid={!validate.description}
+                  valid={validate.description} 
                   onChange={(e) =>{
-                        // this.handleValidation(e);
-                        this.handleChange(e);}}/>
-                    <FormFeedback invalid>This field cannot be null</FormFeedback>
+                    this.handleValidation(e);
+                    this.handleChange(e);
+                        }}/>
+                    <FormFeedback>{errorDescription}</FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Label for="price">Price</Label>
                   <Input type="number" name="price" id="price"
                   onChange={this.handleChange} autoComplete="00.00"></Input>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="state">State</Label>
-                  <Input name="state" type="select"  onChange={this.handleChange}>
-                    <option value="ACTIVE">Active</option>
-                    <option value="DISCONTINUED">Discontinued</option>
-                  </Input>
                 </FormGroup>
                 <FormGroup>
                   <Label for="suppliers">Suppliers</Label>

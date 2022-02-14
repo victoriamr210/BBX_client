@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
-import { Button, Container, Form, FormGroup, Input, Label, DropdownToggle, DropdownItem  } from 'reactstrap';
+import { Button, Container, Form, FormGroup, FormFeedback, Input, Label, DropdownToggle, DropdownItem  } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import Select from 'react-select';
 import SupplierService from './services/SupplierService';
 import ItemService from './services/ItemService';
 import PriceReductionService from './services/PriceReductionService'; 
+import areDatesValid from './utils';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -30,7 +31,13 @@ class ItemUpdate extends Component {
           suppliers: [],
           priceReductions: [],
           isLoading: true,
-          redirectLogin: false
+          redirectLogin: false,
+          errorPrices: 'Prices overlap',
+          errorDescription: 'This field cannot be null',
+          validation: {
+            prices: true,
+            description: true
+          }
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -39,6 +46,7 @@ class ItemUpdate extends Component {
         this.getPriceListItem = this.getPriceReductionItem.bind(this);
         this.handleSuppliersChange = this.handleSuppliersChange.bind(this);
         this.handlePricesChange = this.handlePricesChange.bind(this);
+        this.handleValidation = this.handleValidation.bind(this);
       }
 
       componentDidMount() {
@@ -49,18 +57,26 @@ class ItemUpdate extends Component {
             this.setState({item: response.data})});
         
         SupplierService.listSuppliers()
-            .then(response => this.setState({suppliers: response.data}));
+            .then(response => this.setState({suppliers: response.data}))
+            .catch(error => {
+              this.setState({redirectLogin: true});
+            });
         
         PriceReductionService.listPrices()
-            .then(response => this.setState({priceReductions: response.data, isLoading: false}));
+            .then(response => this.setState({priceReductions: response.data, isLoading: false}))
+            .catch(error =>  {
+              this.setState({redirectLogin: true});
+            });
 
       }
 
       handleChange(event) {
         const target = event.target;
-        const value = target.value;
         const name = target.name;
         let item = {...this.state.item};
+       
+        const value = target.value;
+        item[name] = value;
         this.setState({item});
       }
 
@@ -69,10 +85,30 @@ class ItemUpdate extends Component {
         item.supplierDTOList = this.getSupplierDTOs(event);
         this.setState({item: item});
       }
+
       handlePricesChange(event){
-        const {item} = this.state;
+        const {item, validation} = this.state;
         item.priceReductionDTOS = this.getPriceReductionDto(event);
-        this.setState({item: item});
+        if(areDatesValid(item.priceReductionDTOS)){
+          this.setState({item: item});
+        } else {
+            validation.prices = false;
+            this.setState({validation})
+        } 
+      }
+
+      handleValidation(event){
+        let {validation} = this.state;
+        if(event.target.name === "description"){
+          if(event.target.value){
+            console.log(event.target.value)
+            validation.description = true;
+            this.setState({validation});
+          } else {
+            validation.description = false;
+            this.setState({validation});
+          }
+        }
       }
 
       getSuppliersItem(){
@@ -137,7 +173,7 @@ class ItemUpdate extends Component {
       render() {
 
        
-        const {item, isLoading, redirectLogin} = this.state;
+        const {item, isLoading, redirectLogin, validation, errorPrices, errorDescription} = this.state;
 
         if(redirectLogin){
           return <Redirect to="/login" /> 
@@ -177,21 +213,30 @@ class ItemUpdate extends Component {
                 </FormGroup>
                 <FormGroup>
                   <Label for="description">Description</Label>
-                  <Input type="text" name="description" id="description" value={item.description}
-                   onChange={this.handleChange} autoComplete="description"></Input>
+                  <Input type="text" name="description" id="description" 
+                    value={item.description}
+                    invalid={!validation.description}
+                    valid={validation.description} 
+                    onChange={(e) => {
+                      this.handleValidation(e);
+                      this.handleChange(e)}}
+                   autoComplete="description"></Input>
+                    <FormFeedback>{errorDescription}</FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Label for="price">Price</Label>
                   <Input type="number" name="price" id="price" value={item.price}
-                  onChange={this.handleChange} autoComplete="00.00"></Input>
+                  onChange={this.handleChange}
+                  ></Input>
+                 
                 </FormGroup>
-                <FormGroup>
+                {/* <FormGroup>
                   <Label for="state">State</Label>
                   <Input name="state" id="state" type="select"  value={item.state} onChange={this.handleChange} autoComplete="ACTIVE">
                     <option value="ACTIVE">Active</option>
                     <option value="DISCONTINUED">Discontinued</option>
                   </Input>
-                </FormGroup>
+                </FormGroup> */}
                 <FormGroup>
                   <Label for="suppliers">Suppliers</Label>
                   <Select
@@ -212,7 +257,10 @@ class ItemUpdate extends Component {
                     isMulti 
                     className="basic-multi-select" 
                     classNamePrefix="select"
+                    valid = {validation.prices}
+                    invalid={!validation.prices}
                     onChange={this.handlePricesChange}/>
+                     <FormFeedback>{errorPrices}</FormFeedback>
                 </FormGroup>
                 <FormGroup>
                   <Button color="primary" type="submit">Save</Button>{' '}

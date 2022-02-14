@@ -22,11 +22,39 @@ const filterValues = [
         value: 'ACTIVE'
     },
     {
-        label: 'DEACTIVATED',
-        value: 'DEACTIVATED'
+        label: 'DISCONTINUED',
+        value: 'DISCONTINUED'
     }
 ];
 
+function areDatesValid(prices){
+    let datesPrices = prices.map(price => (
+        {
+            startDate: new Date(price.startDate),
+            endDate: new Date(price.endDate)
+        })
+    ); 
+
+    let earliest = datesPrices.reduce(function (prev, curr) {
+        return prev.startDate < curr.startDate ? prev : curr
+    });
 
 
-export default (isItemValid, filterValues);
+    let latest = datesPrices.reduce(function (prev, curr) {
+        return prev.endDate > curr.endDate ? prev : curr
+    });
+
+    console.log(earliest, latest);
+    let isValid = true;
+    prices.map(price => {
+        if(price.startDate > earliest.startDate || price.endDate < latest.endDate){
+            isValid = false;
+        }
+    });
+    console.log(isValid);
+    return isValid;
+}
+
+
+
+export default (isItemValid, filterValues, areDatesValid);

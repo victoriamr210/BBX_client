@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Container, Table } from 'reactstrap';
+import { Button, ButtonGroup, Container, Form, FormGroup, FormFeedback, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label, Input  } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link, Redirect } from 'react-router-dom';
 import './App.css';
@@ -7,28 +7,76 @@ import 'bootstrap/dist/css/bootstrap.css';
 import filterValues from './utils';
 import Select from 'react-select';
 import ItemService from './services/ItemService';
-import AuthenticationService from './AuthenticationService';
+import Modal from 'react-bootstrap/Modal';
+
 
 class ItemList extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {items: [], isLoading: true, filterValue: 'NONE', redirectLogin: false};
+    this.state = {items: [], isLoading: true,
+       filterValue: 'NONE', 
+       redirectLogin: false, 
+       dropdownOpen: false,
+       show: false,
+       reasonDeactivate: '',
+       error: false};
     this.remove = this.remove.bind(this);
     this.handleFilter = this.handleFilter.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+    this.toggleDropDown = this.toggleDropDown.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleValidation = this.handleValidation.bind(this);
+    this.loadItems = this.loadItems.bind(this);
+  }
+
+  handleShow = () => {
+    this.setState({ show: true });
+  };
+
+  handleClose = () => {
+    this.setState({ show: false });
+  };
+
+  toggleDropDown(){
+    this.setState({dropdownOpen: !this.state.dropdownOpen})
+  }
+
+  handleValidation(event){
+    if(!event.target.value){
+      this.setState({error: true})
+    }
+  }
+
+  handleChange(event){
+    let reasonDeactivate = event.target.value;
+    this.setState({reasonDeactivate});
+  }
+
+  handleSubmit(idItem){
+    this.handleClose();
+    ItemService.deactivateItem(idItem, this.state.reasonDeactivate)
+      .then(this.loadItems());
+    
+  }
+
+  loadItems(){
+    ItemService.listItems()
+      .then(response => {
+        this.setState({items: response.data, isLoading: false})})
+      .catch(error => {
+        this.setState({redirectLogin: true});
+        return Promise.reject(error);
+      });
   }
 
   componentDidMount() {
     this.setState({isLoading: true});
 
-    ItemService.listItems()
-      .then(response => {
-        this.setState({items: response.data, isLoading: false})})
-      .catch(error => {
-        console.log("error");
-        this.setState({redirectLogin: true});
-        return Promise.reject(error);
-      });
+    this.loadItems();
+
     // fetch('/api/item/list')
     //   .then(response => response.json())
     //   .then(data => this.setState({items: data, isLoading: false}));
@@ -48,9 +96,8 @@ class ItemList extends Component {
   }
 
   render() {
-    const {isLoading, filterValue, redirectLogin} = this.state;
+    const {isLoading, filterValue, redirectLogin, show, error} = this.state;
     let {items} = this.state;
-    console.log(filterValues);
     if(redirectLogin){
       return <Redirect to="/login" /> 
     }
@@ -71,11 +118,42 @@ class ItemList extends Component {
         <td>{item.state}</td>
         <td>{new Intl.DateTimeFormat('en-GB').format(new Date(item.creationDate))}</td>
         <td>
-          <ButtonGroup>
-            <Button size ="sm" color="success" tag={Link} to={'/item/details/' + item.idItem}>Info</Button>
-            <Button size="sm" color="primary" tag={Link} to={"/item/update/" + item.idItem}>Edit</Button>
-            <Button size="sm" color="danger" onClick={() => this.remove(item.idItem)}>Delete</Button> 
-          </ButtonGroup>
+        <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
+          <DropdownToggle caret>Options</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem tag={Link} to={'/item/details/' + item.idItem}>Info</DropdownItem>
+            <DropdownItem tag={Link} to={"/item/update/" + item.idItem}>Edit</DropdownItem>
+            <DropdownItem onClick={() => this.remove(item.idItem)}>Delete</DropdownItem>
+            <DropdownItem disabled={item.state !== 'ACTIVE'} onClick={() => this.handleShow()}>Deactivate</DropdownItem>
+       
+          </DropdownMenu>
+        </Dropdown>
+          <Modal show={show} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+          <Modal.Title>Deactivate Item {item.itemCode}?</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <FormGroup>
+                  <Label>Reason</Label>
+                  <Input type="text" name="reason" id="reason" 
+                    onChange={(e) =>{
+                      this.handleValidation(e);
+                      this.handleChange(e);
+                    }}></Input>
+                    <FormFeedback>{error}</FormFeedback>
+                </FormGroup>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.handleClose}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => this.handleSubmit(item.idItem)}>
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </td>
       </tr>
     });
@@ -87,8 +165,8 @@ class ItemList extends Component {
           <div className="float-right">
             <Button color="success" tag={Link} to="/item/new">Add Item</Button>
           </div>
-          <p>Filter Items</p>
           <h3>Item List</h3>
+          <p><b>Filter Items by State</b></p>
           <Select
             className="small" 
             defaultValue={filterValues[0]}
@@ -100,7 +178,7 @@ class ItemList extends Component {
             <thead>
             <tr>
               <th width="10%">Code</th>
-              <th width="10%">Description</th>
+              <th width="30%">Description</th>
               <th width="10%">Price</th>
               <th width="10%">State</th>
               <th width="10%">Creation Date</th>
@@ -111,6 +189,7 @@ class ItemList extends Component {
             {itemList}
             </tbody>
           </Table>
+        
         </Container>
       </div>
     );

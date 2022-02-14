@@ -22,6 +22,18 @@ class ItemService {
   deleteItem(idItem){
     return axios.delete(`${API_URL}/api/item/delete/${idItem}`);
   }
+
+  checkItemCode(itemCode){
+    return axios.get(`${API_URL}/api/item/isCodeAvailable/${itemCode}`);
+  }
+
+  deactivateItem(idItem, reasonDeactivation){
+    return axios.put(`${API_URL}/api/item/deactivateItem/${idItem}`, JSON.stringify(reasonDeactivation));
+  }
+
+  checkDatesPrices(item){
+    return axios.get(`${API_URL}/api/item/checkDatePrices/`, JSON.stringify(item));
+  }
 }
 
 export default new ItemService();

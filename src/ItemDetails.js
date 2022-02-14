@@ -24,9 +24,6 @@ class ItemDetails extends Component{
         this.setState({redirectLogin: true})
       });
 
-        fetch(`/api/item/get/${this.props.match.params.id}`)
-            .then(response => response.json())
-            .then(data => this.setState({item: data,  isLoading: false}));
     }
 
 
@@ -85,6 +82,10 @@ class ItemDetails extends Component{
                           <tr>
                               <td width="20%">Creation Date</td>
                               {date}
+                          </tr>
+                          <tr>
+                            <td width="20%">Creator</td>
+                            <td>{item.creator.name}</td>
                           </tr>
                           <tr>
                               <td>Suppliers</td>
