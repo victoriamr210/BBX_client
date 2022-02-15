@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import AppNavbar from './AppNavbar';
 import { Button, Container, Input, Label,  Form, FormGroup   } from 'reactstrap';
-import { withCookies } from 'react-cookie';
 import AuthenticationService from './AuthenticationService';
 
 class Home extends Component {
@@ -30,11 +29,11 @@ class Home extends Component {
       AuthenticationService
       .executeJwtAuthenticationService(this.state.username, this.state.password)
       .then((response) => {
-        console.log("response", response);
         AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
-        this.props.history.push(`/item`);
+        this.props.history.push('/item');
       }).catch(() => {
         this.setState({ isAuthenticated: false });
+        alert("Nombre de usuario y contraseña incorrectos");
       });
     
   }
@@ -59,7 +58,7 @@ class Home extends Component {
               <Input type="password" name="password" id="password"
               onChange={this.handleChange} autoComplete="00.00"></Input>
             <Button color="primary" type="submit" onClick={this.handleSubmit}>Login</Button>{' '}
-          {/* <Form onSubmit={this.handleSubmit}>
+          {/* <Form>
             <FormGroup>
               <Label for="username">Username</Label>
               <Input type="text" name="username" id="username"
@@ -73,7 +72,7 @@ class Home extends Component {
             </FormGroup>
 
             <FormGroup>
-              <Button color="primary" type="submit">Login</Button>{' '}
+              <Button color="primary" type="submit" onClick={this.handleSubmit}>Login</Button>{' '}
             </FormGroup>
           </Form> */}
         </Container>

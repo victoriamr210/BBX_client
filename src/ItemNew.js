@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
-import { Button, Container, Form, FormGroup, Input, Label, FormFeedback, Table   } from 'reactstrap';
+import { Button, Container, Form, FormGroup, Input, Label, FormFeedback   } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import Select from 'react-select';
-import { useRowSelect } from '@table-library/react-table-library/select';
 import SupplierService from './services/SupplierService';
 import ItemService from './services/ItemService';
 import PriceReductionService from './services/PriceReductionService'; 
+import {areDatesValid} from './utils';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -30,14 +30,17 @@ class ItemNew extends Component {
           item: this.emptyItem,
           suppliers: [],
           priceReductions: [],
-          validate : {
+          validation : {
               itemCode: false,
-              description: false
+              description: false,
+              prices: true
           },
           isLoading: true,
           redirectLogin: false,
           errorItem: 'This field cannot be null',
-          errorDescription: 'This field cannot be null'
+          errorDescription: 'This field cannot be null',
+          errorPrices: 'Prices overlap'
+          
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -46,6 +49,7 @@ class ItemNew extends Component {
         this.handleSuppliers = this.handleSuppliers.bind(this);
         this.handlePrices = this.handlePrices.bind(this);
         this.getPriceReductionDTO = this.getPriceReductionDTO.bind(this);
+        this.isFormValid = this.isFormValid.bind(this);
       }
 
     componentDidMount() {
@@ -88,10 +92,16 @@ class ItemNew extends Component {
       }
 
       handlePrices(event){
-        const {item} = this.state;
+        const {item, validation} = this.state;
         item.priceReductionDTOS = this.getPriceReductionDTO(event);
         this.setState({item: item});
-        // console.log(this.state.item);
+
+        if(areDatesValid(item.priceReductionDTOS)){
+          this.setState({item: item});
+        } else {
+            validation.prices = false;
+            this.setState({validation})
+        } 
       }
 
       getSupplierDTO(suppliersItem){
@@ -113,51 +123,69 @@ class ItemNew extends Component {
       }
 
       handleValidation(event){
-          let {validate, errorItem, errorDescription} = this.state;
+          let {validation, errorItem, errorDescription} = this.state;
           
           if(event.target.name === "itemCode"){
             if(event.target.value){
-              validate.itemCode = true;
+              validation.itemCode = true;
               ItemService.checkItemCode(event.target.value)
                 .then(response => {
                   if(response.data === false){
-                    validate.itemCode = false;
+                    validation.itemCode = false;
                     errorItem = 'This code is already taken';
-                    this.setState({validate, errorItem});
+                    this.setState({validation, errorItem});
                   }
                 });
             } else {
-              validate.itemCode = false;
+              validation.itemCode = false;
               errorItem = "This field cannot be null";
-              this.setState({validate, errorItem});
+              this.setState({validation, errorItem});
             }
           }
 
           if(event.target.name === "description"){
             if(event.target.value){
-              validate.description = true;
-              this.setState({validate, errorDescription});
+              validation.description = true;
+              this.setState({validation, errorDescription});
             } else {
-              validate.description = false;
+              validation.description = false;
               errorDescription = "This field cannot be null";
-              this.setState({validate, errorDescription});
+              this.setState({validation, errorDescription});
             }
           }  
       }
 
+      isFormValid(){
+        const {validation} = this.state;
+        let flag = true;
+        Object.values(validation).map(el => {
+          console.log(el);
+          if(!el)
+            flag = false;
+        });
+        return flag
+        
+      }
+
       async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
+        const {item, validation} = this.state;
+        if(this.isFormValid()){
 
-        ItemService.newItem(item)
-        .then(this.props.history.push('/item'))
+          ItemService.newItem(item)
+          .then(this.props.history.push('/item'))
           .catch(error => {
-            this.setState({redirectLogin: true})
+            console.log("error")
+            this.setState({redirectLogin: true});
           });
+        } else {
+          alert("Hay errores en el formulario");
+        }
     }
         
       render() {
-        const {validate, suppliers, priceReductions, isLoading, redirectLogin, errorDescription, errorItem} = this.state;
+        const {validation, suppliers, priceReductions, isLoading, 
+          redirectLogin, errorDescription, errorItem, errorPrices} = this.state;
 
         if(redirectLogin){
           return <Redirect to="/login" /> 
@@ -169,7 +197,7 @@ class ItemNew extends Component {
 
         const title = <h2>Add Item</h2>;
         
-        // const {validate} = this.state;
+        // const {validation} = this.state;
         // const {suppliers} = this.state;
 
         let suppliersSelect = suppliers.map(supplier => ({
@@ -179,7 +207,7 @@ class ItemNew extends Component {
         let priceReductionSelect = priceReductions.map(pr => (
           {
             value: pr.idPriceReduction,
-            label: pr.reducedPrice + "€ / start: " + pr.startDate + " / end: " + pr.endDate
+            label: pr.reducedPrice + "€ (start: " + pr.startDate + " / end: " + pr.endDate + ")"
         }));
 
         
@@ -192,8 +220,8 @@ class ItemNew extends Component {
                 <FormGroup>
                   <Label for="itemCode">Item Code</Label>
                   <Input type="text" name="itemCode" id="itemCode" 
-                    invalid={!validate.itemCode}
-                    valid={validate.itemCode} 
+                    invalid={!validation.itemCode}
+                    valid={validation.itemCode} 
                     onChange={(e) =>{
                       this.handleValidation(e);
                       this.handleChange(e);
@@ -203,8 +231,8 @@ class ItemNew extends Component {
                 <FormGroup>
                   <Label for="description">Description</Label>
                   <Input type="text" name="description" id="description"  
-                  invalid={!validate.description}
-                  valid={validate.description} 
+                  invalid={!validation.description}
+                  valid={validation.description} 
                   onChange={(e) =>{
                     this.handleValidation(e);
                     this.handleChange(e);
@@ -237,6 +265,8 @@ class ItemNew extends Component {
                     className="basic-multi-select" 
                     classNamePrefix="select"
                     onChange={this.handlePrices}/>
+                    <span class="error"> {!validation.prices ? errorPrices : null}</span>
+
                 </FormGroup>
                 <FormGroup>
                   <Button color="primary" type="submit">Save</Button>{' '}

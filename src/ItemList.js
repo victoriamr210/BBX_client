@@ -4,7 +4,7 @@ import AppNavbar from './AppNavbar';
 import { Link, Redirect } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import filterValues from './utils';
+import {filterValues} from './utils';
 import Select from 'react-select';
 import ItemService from './services/ItemService';
 import Modal from 'react-bootstrap/Modal';
@@ -117,6 +117,7 @@ class ItemList extends Component {
         <td>{item.price}</td>
         <td>{item.state}</td>
         <td>{new Intl.DateTimeFormat('en-GB').format(new Date(item.creationDate))}</td>
+        <td>{item.creator.name}</td>
         <td>
         <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
           <DropdownToggle caret>Options</DropdownToggle>
@@ -182,6 +183,7 @@ class ItemList extends Component {
               <th width="10%">Price</th>
               <th width="10%">State</th>
               <th width="10%">Creation Date</th>
+              <th width="20%">Creator</th>
               <th></th>
             </tr>
             </thead>

@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
-import { Button, Container, Form, FormGroup, FormFeedback, Input, Label, DropdownToggle, DropdownItem  } from 'reactstrap';
+import { Button, Container, Form, FormGroup, FormFeedback, Input, Label  } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import Select from 'react-select';
 import SupplierService from './services/SupplierService';
 import ItemService from './services/ItemService';
 import PriceReductionService from './services/PriceReductionService'; 
-import areDatesValid from './utils';
+import {areDatesValid} from './utils';
+import './App.css';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import AuthenticationService from './AuthenticationService';
 
 class ItemUpdate extends Component {
     emptyItem = {
@@ -97,6 +97,16 @@ class ItemUpdate extends Component {
         } 
       }
 
+      handleValidationPrices(event){
+        const {item, validation} = this.state;
+        if(areDatesValid(item.priceReductionDTOS)){
+          this.setState({item: item});
+        } else {
+            validation.prices = false;
+            this.setState({validation})
+        } 
+      }
+
       handleValidation(event){
         let {validation} = this.state;
         if(event.target.name === "description"){
@@ -114,7 +124,6 @@ class ItemUpdate extends Component {
       getSuppliersItem(){
         const {item} = this.state;
         let suppliersItem = item.supplierDTOList;
-        console.log("suppliers, item", suppliersItem);
         return suppliersItem.map(supplier => ({
           
           value: supplier.idSupplier,
@@ -150,13 +159,18 @@ class ItemUpdate extends Component {
 
       async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
+        const {item, validation} = this.state;
 
-        ItemService.updateItem(item)
+        if(validation.description && validation.prices){
+
+          ItemService.updateItem(item)
           .then(this.props.history.push('/item'))
           .catch(error => {
             this.setState({redirectLogin: true})
           });
+        } else {
+          alert("Hay errores en el formulario");
+        }
         
     
         // await fetch('/api/item/update/' + item.idItem, {
@@ -174,10 +188,10 @@ class ItemUpdate extends Component {
 
        
         const {item, isLoading, redirectLogin, validation, errorPrices, errorDescription} = this.state;
-
         if(redirectLogin){
           return <Redirect to="/login" /> 
         }
+        console.log(validation);
 
         if(isLoading){
           return <p>Loading...</p>;
@@ -185,9 +199,10 @@ class ItemUpdate extends Component {
         const title = <h2>Edit Item</h2>;
 
         const {suppliers, priceReductions} = this.state;
-        console.log(priceReductions);
 
         let suppliersItemSelector = this.getSuppliersItem();
+        // console.log("item: ", suppliersItemSelector);
+
 
         let suppliersSelect = suppliers.map(supplier => ({
           value: supplier.idSupplier,
@@ -195,7 +210,7 @@ class ItemUpdate extends Component {
 
         let pricesSelect = priceReductions.map(pr => ({
             value: pr.idPriceReduction,
-            label: pr.reducedPrice
+            label: pr.reducedPrice + "€ (start: " + pr.startDate + " / end: " + pr.endDate + ")"
         }));
         
         let priceReductionSelector = this.getPriceReductionItem();
@@ -209,7 +224,7 @@ class ItemUpdate extends Component {
               <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
                   <Label for="itemCode">Item Code</Label>
-                  <Input type="text" name="itemCode" editable={false} id="itemCode" defaultValue={item.itemCode}></Input>
+                  <Input type="text" name="itemCode" editable="false" id="itemCode" defaultValue={item.itemCode}></Input>
                 </FormGroup>
                 <FormGroup>
                   <Label for="description">Description</Label>
@@ -257,10 +272,9 @@ class ItemUpdate extends Component {
                     isMulti 
                     className="basic-multi-select" 
                     classNamePrefix="select"
-                    valid = {validation.prices}
-                    invalid={!validation.prices}
-                    onChange={this.handlePricesChange}/>
-                     <FormFeedback>{errorPrices}</FormFeedback>
+                    onChange={
+                      this.handlePricesChange}/>
+                    <span class="error"> {!validation.prices ? errorPrices : null}</span>
                 </FormGroup>
                 <FormGroup>
                   <Button color="primary" type="submit">Save</Button>{' '}

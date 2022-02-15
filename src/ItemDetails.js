@@ -29,7 +29,6 @@ class ItemDetails extends Component{
 
     render(){
         const {item, isLoading, redirectLogin} = this.state;
-        let falg = true;
 
         if(redirectLogin){
           return <Redirect to="/login" /> 
@@ -112,17 +111,6 @@ class ItemDetails extends Component{
                 </Container>
             </div>
         );
-    // } else {
-        return(
-            <div>
-                  <AppNavbar/>
-                  <Container fluid>
-                      <h3>Error</h3>
-                      <p>Se ha producido un error</p>
-                  </Container>
-            </div>
-        );
-    // }
   }
 }
 
