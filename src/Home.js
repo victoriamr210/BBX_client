@@ -48,7 +48,6 @@ class Home extends Component {
 
     return (
       <div>
-        <AppNavbar/>
         <Container fluid>
 
         <Label for="username">Username</Label>

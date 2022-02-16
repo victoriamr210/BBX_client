@@ -64,13 +64,25 @@ class ItemNew extends Component {
       SupplierService.listSuppliers()
             .then(response => this.setState({suppliers: response.data}))
             .catch(error => {
-              this.setState({redirectLogin: true});
+              if(error.response.status === 401){
+                this.setState({redirectLogin: true})
+              }
+      
+              if(error.response.status === 500){
+                alert("Se ha producido un error");
+              } 
             });
         
         PriceReductionService.listPrices()
             .then(response => this.setState({priceReductions: response.data, isLoading: false}))
             .catch(error => {
-              this.setState({redirectLogin: true});
+              if(error.response.status === 401){
+                this.setState({redirectLogin: true})
+              }
+      
+              if(error.response.status === 500){
+                alert("Se ha producido un error");
+              } 
             });
     }
 
@@ -159,7 +171,6 @@ class ItemNew extends Component {
         const {validation} = this.state;
         let flag = true;
         Object.values(validation).map(el => {
-          console.log(el);
           if(!el)
             flag = false;
         });
@@ -167,16 +178,21 @@ class ItemNew extends Component {
         
       }
 
-      async handleSubmit(event) {
+      handleSubmit(event) {
         event.preventDefault();
         const {item, validation} = this.state;
         if(this.isFormValid()){
 
           ItemService.newItem(item)
-          .then(this.props.history.push('/item'))
+          .then(response => this.props.history.push('/item'))
           .catch(error => {
-            console.log("error")
-            this.setState({redirectLogin: true});
+            if(error.response.status === 401){
+              this.setState({redirectLogin: true})
+            }
+    
+            if(error.response.status === 500){
+              alert("Se ha producido un error");
+            } 
           });
         } else {
           alert("Hay errores en el formulario");

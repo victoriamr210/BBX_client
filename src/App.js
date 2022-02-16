@@ -9,6 +9,7 @@ import Home from './Home';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
 import AuthenticatedRoute from './AuthenticatedRoute';
+import UserList from './UserList';
 
 
 class App extends Component{
@@ -19,14 +20,14 @@ class App extends Component{
 
         <Router>
           <Switch>
-            <Route path='/' exact={true} component={ItemList}/>
+            <Route path='/' exact={true} component={Home}/>
             <Route path='/login' exact={true} component={Home}/>
-            {/* <AuthenticatedRoute path="/item" exact component={ItemList} /> */}
             <AuthenticatedRoute path="/logout" exact component={Home} />
             <AuthenticatedRoute path='/item' exact={true} component={ItemList}/>
             <AuthenticatedRoute path='/item/update/:id' exact={true} component={ItemUpdate}/>
-            <Route path='/item/new/' exact={true} component={ItemNew}/>
-            <Route path='/item/details/:id' exact={true} component={ItemDetails}/>
+            <AuthenticatedRoute path='/item/new/' exact={true} component={ItemNew}/>
+            <AuthenticatedRoute path='/item/details/:id' exact={true} component={ItemDetails}/>
+            <AuthenticatedRoute path='/user' exact={true} component={UserList}/>
           </Switch>
         </Router>
       </CookiesProvider>

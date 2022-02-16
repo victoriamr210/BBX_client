@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Container, Form, FormGroup, FormFeedback, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label, Input  } from 'reactstrap';
+import { Button, ButtonGroup, Container, Form, FormGroup, FormFeedback, Table, Dropdown, DropdownToggle,
+   DropdownMenu, DropdownItem, Label, Input  } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link, Redirect } from 'react-router-dom';
 import './App.css';
@@ -8,6 +9,8 @@ import {filterValues} from './utils';
 import Select from 'react-select';
 import ItemService from './services/ItemService';
 import Modal from 'react-bootstrap/Modal';
+import { IoTrashOutline, IoBan } from "react-icons/io5";
+import ItemDropDown from './ItemDropDown';
 
 
 class ItemList extends Component {
@@ -32,8 +35,12 @@ class ItemList extends Component {
     this.loadItems = this.loadItems.bind(this);
   }
 
-  handleShow = () => {
-    this.setState({ show: true });
+  handleShow(state) {
+    if(state === 'ACTIVE'){
+      this.setState({ show: true });
+    } else{
+      alert("This item is already discontinued");
+    }
   };
 
   handleClose = () => {
@@ -92,6 +99,11 @@ class ItemList extends Component {
       .then( () => {
         let updatedItems = [...this.state.items].filter(i => i.idItem !== id);
        this.setState({items: updatedItems});
+      })
+      .catch(error => {
+        if(error.response.status === 403){
+          alert("This user does not have permission to do this action");
+        }
       }));
   }
 
@@ -118,17 +130,12 @@ class ItemList extends Component {
         <td>{item.state}</td>
         <td>{new Intl.DateTimeFormat('en-GB').format(new Date(item.creationDate))}</td>
         <td>{item.creator.name}</td>
+
         <td>
-        <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
-          <DropdownToggle caret>Options</DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem tag={Link} to={'/item/details/' + item.idItem}>Info</DropdownItem>
-            <DropdownItem tag={Link} to={"/item/update/" + item.idItem}>Edit</DropdownItem>
-            <DropdownItem onClick={() => this.remove(item.idItem)}>Delete</DropdownItem>
-            <DropdownItem disabled={item.state !== 'ACTIVE'} onClick={() => this.handleShow()}>Deactivate</DropdownItem>
-       
-          </DropdownMenu>
-        </Dropdown>
+         <IoTrashOutline class="pointer" onClick={() => this.remove(item.idItem)}/>
+        </td>
+        <td>
+          <IoBan class="pointer" disable={item.state !== 'ACTIVE'} onClick={() => this.handleShow(item.state)}/>
           <Modal show={show} onHide={this.handleClose}>
             <Modal.Header closeButton>
           <Modal.Title>Deactivate Item {item.itemCode}?</Modal.Title>
@@ -155,6 +162,9 @@ class ItemList extends Component {
               </Button>
             </Modal.Footer>
           </Modal>
+          </td>
+          <td>
+          <ItemDropDown item={item}/>
         </td>
       </tr>
     });
@@ -183,8 +193,10 @@ class ItemList extends Component {
               <th width="10%">Price</th>
               <th width="10%">State</th>
               <th width="10%">Creation Date</th>
-              <th width="20%">Creator</th>
-              <th></th>
+              <th width="15%">Creator</th>
+              <th width="5%"></th>
+              <th width="5%"></th>
+              <th width="10%"></th>
             </tr>
             </thead>
             <tbody>

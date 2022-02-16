@@ -21,7 +21,13 @@ class ItemDetails extends Component{
       ItemService.getItem(this.props.match.params.id)
       .then(response => this.setState({item: response.data, isLoading: false}))
       .catch(error => {
-        this.setState({redirectLogin: true})
+        if(error.response.status === 401){
+          this.setState({redirectLogin: true})
+        }
+
+        if(error.response.status === 500){
+          alert("Se ha producido un error");
+        } 
       });
 
     }

@@ -3,24 +3,30 @@ import { Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } f
 import { Link } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
+import AuthenticationService from './AuthenticationService';
+import { Button } from 'react-bootstrap';
 
 
 export default class AppNavbar extends Component {
   constructor(props) {
     super(props);
     this.state = {isOpen: false};
-    this.toggle = this.toggle.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
-  toggle() {
-    this.setState({
-      isOpen: !this.state.isOpen
-    });
+  logout(){
+    AuthenticationService.logout();
+    this.props.push("/login");
   }
+
+
 
   render() {
     return <Navbar color="dark" dark expand="md">
-      <NavbarBrand tag={Link} to="/">Home</NavbarBrand>
+      <NavbarBrand tag={Link} to="/item">Home</NavbarBrand>
+      <NavbarBrand tag={Link} to="/user">Manage Users</NavbarBrand>
+      <Button color="primary" onClick={this.logout}>Logout</Button>
+      {/* <NavbarBrand>Logout</NavbarBrand> */}
       {/* <NavbarToggler onClick={this.toggle}/> */}
       {/* <Collapse isOpen={this.state.isOpen} navbar>
         <Nav className="ml-auto" navbar>

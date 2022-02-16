@@ -53,19 +53,30 @@ class ItemUpdate extends Component {
 
         ItemService.getItem(this.props.match.params.id)
           .then(response => {
-            console.log(response.data);
             this.setState({item: response.data})});
         
         SupplierService.listSuppliers()
             .then(response => this.setState({suppliers: response.data}))
             .catch(error => {
-              this.setState({redirectLogin: true});
+              if(error.response.status === 401){
+                this.setState({redirectLogin: true})
+              }
+      
+              if(error.response.status === 500){
+                alert("Se ha producido un error");
+              } 
             });
         
         PriceReductionService.listPrices()
             .then(response => this.setState({priceReductions: response.data, isLoading: false}))
             .catch(error =>  {
-              this.setState({redirectLogin: true});
+              if(error.response.status === 401){
+                this.setState({redirectLogin: true})
+              }
+      
+              if(error.response.status === 500){
+                alert("Se ha producido un error");
+              } 
             });
 
       }
@@ -164,24 +175,20 @@ class ItemUpdate extends Component {
         if(validation.description && validation.prices){
 
           ItemService.updateItem(item)
-          .then(this.props.history.push('/item'))
+          .then(response => this.props.history.push('/item'))
           .catch(error => {
-            this.setState({redirectLogin: true})
+            if(error.response.status === 401){
+              this.setState({redirectLogin: true})
+            }
+    
+            if(error.response.status === 500){
+              alert("Se ha producido un error");
+            } 
           });
         } else {
           alert("Hay errores en el formulario");
         }
-        
-    
-        // await fetch('/api/item/update/' + item.idItem, {
-        //   method: 'PUT' ,
-        //   headers: {
-        //     'Accept': 'application/json',
-        //     'Content-Type': 'application/json'
-        //   },
-        //   body: JSON.stringify(item),
-        // });
-        // this.props.history.push('/item');
+      
       }
 
       render() {
@@ -191,7 +198,6 @@ class ItemUpdate extends Component {
         if(redirectLogin){
           return <Redirect to="/login" /> 
         }
-        console.log(validation);
 
         if(isLoading){
           return <p>Loading...</p>;
