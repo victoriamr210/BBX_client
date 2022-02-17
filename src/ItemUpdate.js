@@ -122,7 +122,6 @@ class ItemUpdate extends Component {
         let {validation} = this.state;
         if(event.target.name === "description"){
           if(event.target.value){
-            console.log(event.target.value)
             validation.description = true;
             this.setState({validation});
           } else {
@@ -207,7 +206,6 @@ class ItemUpdate extends Component {
         const {suppliers, priceReductions} = this.state;
 
         let suppliersItemSelector = this.getSuppliersItem();
-        // console.log("item: ", suppliersItemSelector);
 
 
         let suppliersSelect = suppliers.map(supplier => ({
@@ -221,7 +219,6 @@ class ItemUpdate extends Component {
         
         let priceReductionSelector = this.getPriceReductionItem();
         
-        // console.log(suppliersSelect);
         return (
           <div>
             <AppNavbar/>
@@ -280,7 +277,7 @@ class ItemUpdate extends Component {
                     classNamePrefix="select"
                     onChange={
                       this.handlePricesChange}/>
-                    <span class="error"> {!validation.prices ? errorPrices : null}</span>
+                    <span className="error"> {!validation.prices ? errorPrices : null}</span>
                 </FormGroup>
                 <FormGroup>
                   <Button color="primary" type="submit">Save</Button>{' '}

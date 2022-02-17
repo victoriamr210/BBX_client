@@ -64,8 +64,8 @@ class ItemDetails extends Component{
           return(
             <div>
               <AppNavbar/>
-                <h3>Item Details</h3>
                 <Container fluid>
+                <h3>Item Details</h3>
                   <Table className="mt-5">
                       <tbody>
                           <tr>

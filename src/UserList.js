@@ -25,7 +25,6 @@ class UserList extends Component {
 
   isDroppedDown(user){
     const {dropdownOpen, users} = this.state;
-    console.log()
     return dropdownOpen[users.indexOf(user)];
   }
 

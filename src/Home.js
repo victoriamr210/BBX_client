@@ -29,11 +29,16 @@ class Home extends Component {
       AuthenticationService
       .executeJwtAuthenticationService(this.state.username, this.state.password)
       .then((response) => {
-        AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+        AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token);
         this.props.history.push('/item');
-      }).catch(() => {
-        this.setState({ isAuthenticated: false });
-        alert("Nombre de usuario y contraseña incorrectos");
+      }).catch(error => {
+        if(error.response.status === 401){
+          this.setState({ isAuthenticated: false });
+          alert("Nombre de usuario y contraseña incorrectos");
+        } else {
+          alert("Ha ocurrido un error");
+        }
+
       });
     
   }
@@ -47,16 +52,26 @@ class Home extends Component {
   render() {
 
     return (
-      <div>
+      <div className="app">
         <Container fluid>
+          <h2 className="App">Item Management</h2>
+        <div className="login-form">
+          <div className="input-container">
 
-        <Label for="username">Username</Label>
-              <Input type="text" name="username" id="username"
-              onChange={this.handleChange} autoComplete="00.00"></Input>
-               <Label for="password">Password</Label>
-              <Input type="password" name="password" id="password"
-              onChange={this.handleChange} autoComplete="00.00"></Input>
+            <Label for="username">Username</Label>
+            <Input type="text" name="username" id="username"
+                onChange={this.handleChange} autoComplete="00.00"></Input>
+          </div>
+          <div className="input-container">
+
+            <Label for="password">Password</Label>
+            <Input type="password" name="password" id="password"
+                  onChange={this.handleChange} autoComplete="00.00"></Input>
+          </div>
+          <div className="button-container">
             <Button color="primary" type="submit" onClick={this.handleSubmit}>Login</Button>{' '}
+          </div>
+          </div>
           {/* <Form>
             <FormGroup>
               <Label for="username">Username</Label>

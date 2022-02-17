@@ -47,6 +47,35 @@
   color: red;
 }
 
-pointer.hover{
+.pointer:hover{
   cursor: pointer;
+}
+
+.login-form {
+  /* width: 30%; */
+  justify-content: center;
+  background-color: white;
+  padding: 2rem;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #f8f9fd;
 }

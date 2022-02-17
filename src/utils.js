@@ -5,7 +5,6 @@ function isItemValid(item){
     
     Object.values(item).forEach(value => {
         if(typeof value === 'undefined'){
-            console.log(value);
             isValid = false;
             return;
         }
@@ -36,7 +35,6 @@ export function areDatesValid(prices){
             endDate: new Date(price.endDate)
         })
     ); 
-    console.log(datesPrices)
     if(datesPrices.length <= 1){
         return true;
     }
@@ -50,14 +48,11 @@ export function areDatesValid(prices){
         return prev.endDate > curr.endDate ? prev : curr
     });
 
-    console.log("early", earliest, "late", latest);
 
     let isValid = true;
     datesPrices.map(price => {
-        console.log(price)
 
         if(!arePricesEqual(price, earliest)){
-            console.log(price.startDate >= earliest.startDate)
             if(price.startDate.getTime() >= earliest.startDate.getTime() || price.startDate.getTime() <= latest.endDate.getTime()){
                 isValid = false;
             }
@@ -65,7 +60,6 @@ export function areDatesValid(prices){
 
         if(price !== earliest){
             if(price.startDate >= earliest.startDate || price.startDate <= latest.endDate){
-                // console.log("first");
                 isValid = false;
             }
         }
@@ -78,7 +72,6 @@ export function areDatesValid(prices){
 
         if(price !== latest){
             if(price.endDate <= latest.endDate){
-                // console.log("second");
                 isValid = false;
             }
         }

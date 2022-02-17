@@ -37,10 +37,10 @@ class AuthenticationService {
     }
 
     registerSuccessfulLoginForJwt(username, token) {
-        console.log("register");
         localStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
         localStorage.setItem(USER_TOKEN, token)
         this.setupAxiosInterceptors(this.createJWTToken(token))
+        console.log(token)
     }
 
     createJWTToken(token) {
@@ -51,12 +51,15 @@ class AuthenticationService {
     logout() {
         localStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
         localStorage.removeItem(USER_TOKEN);
+        console.log("Log out");
+        return axios.post(`${API_URL}/logout`);
     }
 
     isUserLoggedIn() {
         let user = localStorage.getItem(USER_NAME_SESSION_ATTRIBUTE_NAME)
-        if (user === null) return false
-        return true
+        let token = localStorage.getItem(USER_TOKEN)
+        if (user !== null && token !== null) return true
+        return false
     }
 
     getLoggedInUserName() {
@@ -66,16 +69,20 @@ class AuthenticationService {
     }
 
     setupAxiosInterceptors(token) {
+        token = localStorage.getItem(USER_TOKEN);
         axios.interceptors.request.use(
-            (config) => {
+            (config, request) => {
                 if (this.isUserLoggedIn()) {
                     config.headers.authorization = token
                     config.headers['Content-Type'] = 'application/json';
                     config.headers['Accept'] =  'application/json';
                 }
+                console.log("interceptor: token:", token)
+                console.log('Starting Request', JSON.stringify(request, null, 2));
                 return config
             }
-        )
+        );
+
     }
 }
 

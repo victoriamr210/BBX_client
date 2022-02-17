@@ -72,6 +72,7 @@ class ItemList extends Component {
   loadItems(){
     ItemService.listItems()
       .then(response => {
+        console.log(response);
         this.setState({items: response.data, isLoading: false})})
       .catch(error => {
         this.setState({redirectLogin: true});
@@ -131,40 +132,9 @@ class ItemList extends Component {
         <td>{new Intl.DateTimeFormat('en-GB').format(new Date(item.creationDate))}</td>
         <td>{item.creator.name}</td>
 
-        <td>
-         <IoTrashOutline class="pointer" onClick={() => this.remove(item.idItem)}/>
-        </td>
-        <td>
-          <IoBan class="pointer" disable={item.state !== 'ACTIVE'} onClick={() => this.handleShow(item.state)}/>
-          <Modal show={show} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-          <Modal.Title>Deactivate Item {item.itemCode}?</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <FormGroup>
-                  <Label>Reason</Label>
-                  <Input type="text" name="reason" id="reason" 
-                    onChange={(e) =>{
-                      this.handleValidation(e);
-                      this.handleChange(e);
-                    }}></Input>
-                    <FormFeedback>{error}</FormFeedback>
-                </FormGroup>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleClose}>
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={() => this.handleSubmit(item.idItem)}>
-                Save Changes
-              </Button>
-            </Modal.Footer>
-          </Modal>
-          </td>
-          <td>
           <ItemDropDown item={item}/>
+        <td>
+         <IoTrashOutline className="pointer" onClick={() => this.remove(item.idItem)}/>
         </td>
       </tr>
     });

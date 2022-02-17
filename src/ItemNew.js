@@ -53,13 +53,6 @@ class ItemNew extends Component {
       }
 
     componentDidMount() {
-      // fetch('/api/supplier/list')
-      //   .then(response => response.json())
-      //   .then(data => this.setState({suppliers: data, isLoading: true}));
-      
-      //   fetch('/api/priceReduction/list')
-      //     .then(response => response.json())
-      //     .then(data =>  this.setState({priceReductions: data, isLoading: false}));
 
       SupplierService.listSuppliers()
             .then(response => this.setState({suppliers: response.data}))
@@ -100,7 +93,6 @@ class ItemNew extends Component {
         const {item} = this.state;
         item.supplierDTOList = this.getSupplierDTO(event);
         this.setState({item: item});
-        // console.log(this.state.item);
       }
 
       handlePrices(event){
@@ -281,7 +273,7 @@ class ItemNew extends Component {
                     className="basic-multi-select" 
                     classNamePrefix="select"
                     onChange={this.handlePrices}/>
-                    <span class="error"> {!validation.prices ? errorPrices : null}</span>
+                    <span className="error"> {!validation.prices ? errorPrices : null}</span>
 
                 </FormGroup>
                 <FormGroup>
