@@ -4,13 +4,13 @@ import './App.css';
 import ItemList from './ItemList';
 import ItemUpdate from './ItemUpdate';
 import ItemNew from './ItemNew';
-import ItemDetails from './ItemDetails';
+import ItemDetails from './item/ItemDetails';
 import Home from './Home';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
 import AuthenticatedRoute from './AuthenticatedRoute';
-import UserList from './UserList';
-import UserInfo from './UserInfo';
+import UserList from './user/UserList';
+import UserInfo from './user/UserInfo';
 
 
 class App extends Component{

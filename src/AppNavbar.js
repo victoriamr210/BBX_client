@@ -15,8 +15,10 @@ class AppNavbar extends Component {
   }
 
   logout(){
-    AuthenticationService.logout();
-    this.props.history.push('/login');
+    AuthenticationService.logout()
+    .then(response =>  {
+      this.props.history.push('/login');
+    });
   }
 
   userInfo(){
@@ -36,15 +38,6 @@ class AppNavbar extends Component {
       <NavbarBrand>
         <Button color= "success" onClick={this.userInfo}>My Profile</Button>
       </NavbarBrand>
-      {/* <NavbarBrand>Logout</NavbarBrand> */}
-      {/* <NavbarToggler onClick={this.toggle}/> */}
-      {/* <Collapse isOpen={this.state.isOpen} navbar>
-        <Nav className="ml-auto" navbar>
-          <NavItem>
-            <NavLink href="https://github.com/oktadeveloper/okta-spring-boot-react-crud-example">GitHub</NavLink>
-          </NavItem>
-        </Nav>
-      </Collapse> */}
     </Navbar>;
   }
 }

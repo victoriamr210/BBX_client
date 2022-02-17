@@ -84,10 +84,6 @@ class ItemList extends Component {
     this.setState({isLoading: true});
 
     this.loadItems();
-
-    // fetch('/api/item/list')
-    //   .then(response => response.json())
-    //   .then(data => this.setState({items: data, isLoading: false}));
     
   }
 
@@ -109,7 +105,7 @@ class ItemList extends Component {
   }
 
   render() {
-    const {isLoading, filterValue, redirectLogin, show, error} = this.state;
+    const {isLoading, filterValue, redirectLogin} = this.state;
     let {items} = this.state;
     if(redirectLogin){
       return <Redirect to="/login" /> 

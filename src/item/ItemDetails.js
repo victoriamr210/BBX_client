@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Table, Button } from 'reactstrap';
 import { Link, Redirect } from 'react-router-dom';
-import AppNavbar from './AppNavbar';
-import isItemValid from './utils';
-import ItemService from './services/ItemService';
+import AppNavbar from '../AppNavbar';
+import isItemValid from '../utils';
+import ItemService from '../services/ItemService';
 
 
 class ItemDetails extends Component{

@@ -52,7 +52,7 @@ class AuthenticationService {
         localStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
         localStorage.removeItem(USER_TOKEN);
         console.log("Log out");
-        return axios.post(`${API_URL}/logout`);
+        return axios.post(`${API_URL}/userLogout`);
     }
 
     isUserLoggedIn() {
@@ -69,16 +69,13 @@ class AuthenticationService {
     }
 
     setupAxiosInterceptors(token) {
-        token = localStorage.getItem(USER_TOKEN);
         axios.interceptors.request.use(
-            (config, request) => {
+            (config) => {
                 if (this.isUserLoggedIn()) {
                     config.headers.authorization = token
                     config.headers['Content-Type'] = 'application/json';
                     config.headers['Accept'] =  'application/json';
                 }
-                console.log("interceptor: token:", token)
-                console.log('Starting Request', JSON.stringify(request, null, 2));
                 return config
             }
         );

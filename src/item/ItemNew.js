@@ -172,7 +172,7 @@ class ItemNew extends Component {
 
       handleSubmit(event) {
         event.preventDefault();
-        const {item, validation} = this.state;
+        const {item} = this.state;
         if(this.isFormValid()){
 
           ItemService.newItem(item)
