@@ -1,7 +1,7 @@
 import { withRouter, Redirect } from "react-router-dom";
-import UserService from './services/UserService';
+import UserService from '../services/UserService';
 import { Table, Container } from "react-bootstrap";
-import AppNavbar from "./AppNavbar";
+import AppNavbar from "../AppNavbar";
 const { Component } = require("react");
 
 class UserInfo extends Component{

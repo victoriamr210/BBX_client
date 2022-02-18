@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {Button, Container,  Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { Link, Redirect } from 'react-router-dom';
-import UserService from './services/UserService';
-import AppNavbar from './AppNavbar';
+import UserService from '../services/UserService';
+import AppNavbar from '../AppNavbar';
 import { Table } from 'react-bootstrap';
 import UserDropDown from './UserDropDown';
 

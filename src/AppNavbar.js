@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { Collapse, Nav, Navbar, NavbarBrand } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -31,12 +31,12 @@ class AppNavbar extends Component {
   render() {
     return <Navbar color="dark" dark expand="md">
       <NavbarBrand tag={Link} to="/item">Home</NavbarBrand>
-      <NavbarBrand tag={Link} to="/user">Manage Users</NavbarBrand>
-      <NavbarBrand className="float-right">
-        <Button  color="primary" onClick={this.logout}>Logout</Button>
+      {/* <NavbarBrand tag={Link} to="/user">Manage Users</NavbarBrand> */}
+      <NavbarBrand >
+        <Button className="btn btn-dark" onClick={this.userInfo}>My Profile</Button>
       </NavbarBrand>
-      <NavbarBrand>
-        <Button color= "success" onClick={this.userInfo}>My Profile</Button>
+      <NavbarBrand className="float-right">
+        <Button  className="btn btn-dark" onClick={this.logout}>Logout</Button>
       </NavbarBrand>
     </Navbar>;
   }

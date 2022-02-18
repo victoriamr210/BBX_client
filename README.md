@@ -1,3 +1,13 @@
+# Aplicación para el manejo de artículos (Cliente)
+
+Este proyecto realizado con ReactJS iplementa un cliente que se conecta con una API Rest que hace de aplicación de gestión de artículos.
+
+Se tendrá que iniciar sesión con un usario y contraseña, una vez indetificado el usuario podrá ver el catálogo de artículos y consultar su información así como crear, modificar y eliminar arttículos.
+
+Cada artículo es proporcionado por un proveedor y se le puede aplicar una rebaja de precio.
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import ItemList from './ItemList';
-import ItemUpdate from './ItemUpdate';
-import ItemNew from './ItemNew';
+import ItemList from './item/ItemList';
+import ItemUpdate from './item/ItemUpdate';
+import ItemNew from './item/ItemNew';
 import ItemDetails from './item/ItemDetails';
 import Home from './Home';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';

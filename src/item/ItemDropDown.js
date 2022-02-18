@@ -3,7 +3,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Form, FormGroup, FormFeedback, Label, Input, Button} from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
-import ItemService from './services/ItemService';
+import ItemService from '../services/ItemService';
 
 class ItemDropDown extends Component{
 

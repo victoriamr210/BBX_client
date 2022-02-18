@@ -79,3 +79,8 @@
   gap: 20px;
   background-color: #f8f9fd;
 }
+
+
+.no-background {
+  background-color: #282c34;
+}

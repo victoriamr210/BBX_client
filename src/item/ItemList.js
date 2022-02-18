@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Button, ButtonGroup, Container, Form, FormGroup, FormFeedback, Table, Dropdown, DropdownToggle,
    DropdownMenu, DropdownItem, Label, Input  } from 'reactstrap';
-import AppNavbar from './AppNavbar';
+import AppNavbar from '../AppNavbar';
 import { Link, Redirect } from 'react-router-dom';
-import './App.css';
+import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import {filterValues} from './utils';
+import {filterValues} from '../utils';
 import Select from 'react-select';
-import ItemService from './services/ItemService';
+import ItemService from '../services/ItemService';
 import Modal from 'react-bootstrap/Modal';
 import { IoTrashOutline, IoBan } from "react-icons/io5";
 import ItemDropDown from './ItemDropDown';

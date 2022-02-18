@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { Link, withRouter, Redirect } from 'react-router-dom';
 import { Button, Container, Form, FormGroup, Input, Label, FormFeedback   } from 'reactstrap';
-import AppNavbar from './AppNavbar';
+import AppNavbar from '../AppNavbar';
 import Select from 'react-select';
-import SupplierService from './services/SupplierService';
-import ItemService from './services/ItemService';
-import PriceReductionService from './services/PriceReductionService'; 
-import {areDatesValid} from './utils';
-
-import './App.css';
+import SupplierService from '../services/SupplierService';
+import ItemService from '../services/ItemService';
+import PriceReductionService from '../services/PriceReductionService'; 
+import {areDatesValid} from '../utils';
+import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
 class ItemNew extends Component {
